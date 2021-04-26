@@ -39,9 +39,11 @@ namespace PeristalticApp
         public MQTTPage()
         {
             InitializeComponent();
-            //ElementHost.EnableModelessKeyboardInterop(MQTTPage);
-             Global.mqttClient = null;
+
+            Classes.Global.mqttClient = null;
             staticMqtt = this;
+
+            btnLogIn_Click(null, null);
 
             Topics = new List<Classes.Topic>();
             Topics.Add(new Classes.Topic("peristaltic/data"));
@@ -50,7 +52,12 @@ namespace PeristalticApp
             TopicOverview.ItemsSource = Topics;
             TopicComboBox.ItemsSource = null;
             TopicComboBox.ItemsSource = Topics;
-            
+
+            if(MainWindow.connectFromMainWindow == true)
+            {
+                MainWindow.connectFromMainWindow = false;
+                MainWindow.navigateToPage("MonitorPage");
+            }
         }
 
         private async void BtnPublish_Click(object sender, RoutedEventArgs e) => await MQTT_Publish(Topics[TopicComboBox.SelectedIndex].Name,txtSendMessage.Text);
@@ -76,7 +83,7 @@ namespace PeristalticApp
                 .WithRetainFlag(true)
                 .Build();
 
-            await Global.mqttClient.PublishAsync(message);
+            await Classes.Global.mqttClient.PublishAsync(message);
         }
 
         public static async Task MQTT_Subscribe()
@@ -89,14 +96,14 @@ namespace PeristalticApp
                     return;
                 }
 
-                if (!Global.mqttClient.IsConnected)
+                if (!Classes.Global.mqttClient.IsConnected)
                 {
                     //MessageBox.Show("MQTT Client isn't connected！");
                     return;
                 }
 
                 // Subscribe to a topic
-                await Global.mqttClient.SubscribeAsync(new TopicFilterBuilder()
+                await Classes.Global.mqttClient.SubscribeAsync(new TopicFilterBuilder()
                     .WithTopic(Topics[i].Name)
                     .WithAtMostOnceQoS()
                     .Build()
@@ -106,6 +113,8 @@ namespace PeristalticApp
                 staticMqtt.Dispatcher.Invoke((new Action(() =>
                 {
                     staticMqtt.txtReceiveMessage.AppendText($"Client is subsribeing: [{Topics[i].Name}]topic{Environment.NewLine}");
+                    //MessageBox.Show($"Client is subsribeing: [{Topics[i].Name}]topic{Environment.NewLine}");
+
                 })));
             }
         }
@@ -114,29 +123,28 @@ namespace PeristalticApp
         {
             // Create a new MQTT client.
 
-            if (Global.mqttClient == null)
+            if (Classes.Global.mqttClient == null)
             {
                 var factory = new MqttFactory();
-                Global.mqttClient = factory.CreateMqttClient();
+                Classes.Global.mqttClient = factory.CreateMqttClient();
 
-                Global.mqttClient.ApplicationMessageReceived += MqttClient_ApplicationMessageReceived;
-                Global.mqttClient.Connected += MqttClient_Connected;
-                Global.mqttClient.Disconnected += MqttClient_Disconnected;
+                Classes.Global.mqttClient.ApplicationMessageReceived += MqttClient_ApplicationMessageReceived;
+                Classes.Global.mqttClient.Connected += MqttClient_Connected;
+                Classes.Global.mqttClient.Disconnected += MqttClient_Disconnected;
             }
 
             try
             {
                 CreteClient();
-                await Global.mqttClient.ConnectAsync(Global.options);
-
+                await Classes.Global.mqttClient.ConnectAsync(Classes.Global.options);
             }
             catch (Exception ex)
             {
                 staticMqtt.Dispatcher.Invoke((new Action(() =>
                 {
                     staticMqtt.txtReceiveMessage.AppendText("Failed to connect to MQTT server！" + Environment.NewLine + ex.Message + Environment.NewLine);
-                    //MessageBox.Show("Failed to connect to MQTT server");
-
+                    Classes.Global.Instance.MQTTConnectedIndicatorTxt = "MQTT Failed";
+                    Classes.Global.Instance.MQTTConnectedIndicatorIndicator = new SolidColorBrush(Colors.Red);
                 })));
             }
 
@@ -157,7 +165,7 @@ namespace PeristalticApp
             int port = Convert.ToInt32(staticMqtt.txtPort.Text.ToString());
             string user = staticMqtt.txtUsername.Text.ToString();
             string pass = staticMqtt.txtPsw.Text.ToString();
-            Global.options = new MqttClientOptionsBuilder()
+            Classes.Global.options = new MqttClientOptionsBuilder()
                 .WithClientId(id)
                 .WithTcpServer(ip, port)
                 .WithCredentials(user, pass)
@@ -172,6 +180,9 @@ namespace PeristalticApp
             {
                 staticMqtt.txtReceiveMessage.Clear();
                 staticMqtt.txtReceiveMessage.AppendText("Connected to MQTT server！" + Environment.NewLine);
+                Classes.Global.Instance.MQTTConnectedIndicatorTxt = "MQTT Connected";
+                Classes.Global.Instance.MQTTConnectedIndicatorIndicator = new SolidColorBrush(Colors.Green); 
+
             })));
         }
 
@@ -184,6 +195,9 @@ namespace PeristalticApp
                 curTime = DateTime.UtcNow;
                 staticMqtt.txtReceiveMessage.AppendText($">> [{curTime.ToLongTimeString()}]");
                 staticMqtt.txtReceiveMessage.AppendText("MQTT disconnected！" + Environment.NewLine);
+                Classes.Global.Instance.MQTTConnectedIndicatorTxt = "MQTT Disconnected";
+                Classes.Global.Instance.MQTTConnectedIndicatorIndicator = new SolidColorBrush(Colors.Red); 
+
             })));
 
             //Reconnecting
@@ -200,7 +214,7 @@ namespace PeristalticApp
                     await Task.Delay(TimeSpan.FromSeconds(5));
                     try
                     {
-                        await Global.mqttClient.ConnectAsync(Global.options);
+                        await Classes.Global.mqttClient.ConnectAsync(Classes.Global.options);
                     }
                     catch
                     {
@@ -242,12 +256,21 @@ namespace PeristalticApp
 
             if (e.ApplicationMessage.Topic == "peristaltic/settings")
             {
-                /*try { MonitorPage.DataFromPump = JsonConvert.DeserializeObject<Classes.JSONSettings>((e.ApplicationMessage.Payload).ToString()); }
+                /*try { MonitorPage.SettingsFromPump = JsonConvert.DeserializeObject<Classes.JSONSettings>((e.ApplicationMessage.Payload).ToString()); }
 
                 catch (Exception) {}*/
                 string IncomingJson = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                 if (IncomingJson[0] == '[')
-                    MonitorPage.DataFromPump = JsonConvert.DeserializeObject<List<Classes.Settings>>(IncomingJson);
+                    MonitorPage.SettingsFromPump = JsonConvert.DeserializeObject<List<Classes.Settings>>(IncomingJson);
+            }
+            if (e.ApplicationMessage.Topic == "peristaltic/data")
+            {
+                /*try { MonitorPage.SettingsFromPump = JsonConvert.DeserializeObject<Classes.JSONSettings>((e.ApplicationMessage.Payload).ToString()); }
+
+                catch (Exception) {}*/
+                string IncomingJson = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                if (IncomingJson[0] == '[')
+                    MonitorPage.DataFromPump = JsonConvert.DeserializeObject<List<Classes.JSONData>>(IncomingJson);
             }
 
         }
@@ -265,7 +288,7 @@ namespace PeristalticApp
             isReconnect = false;
             try
             {
-                Task.Run(async () => { await Global.mqttClient.DisconnectAsync(); });
+                Task.Run(async () => { await Classes.Global.mqttClient.DisconnectAsync(); });
 
             }
             catch (Exception)

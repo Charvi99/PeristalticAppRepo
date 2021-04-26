@@ -86,6 +86,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\Comunication.cs" />
+    <Compile Include="Classes\Global.cs" />
+    <Compile Include="Classes\GraphData.cs" />
+    <Compile Include="Classes\JSONData.cs" />
     <Compile Include="Classes\JSONSettings.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Topic.cs" />

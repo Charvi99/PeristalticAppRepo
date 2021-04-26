@@ -26,7 +26,20 @@ namespace PeristalticApp.Classes
                 }
             }
         }
-       
+        private bool changed { get; set; }
+        public bool Changed
+        {
+            get { return changed; }
+            set
+            {
+                if (changed != value)
+                {
+                    changed = value;
+                    OnPropertyChanged("Changed");
+                }
+            }
+        }
+
 
         public Settings()
         {
@@ -35,12 +48,13 @@ namespace PeristalticApp.Classes
             Unit = "";
             Selected = false;
         }
-        public Settings(string name, int value, string unit, bool selected)
+        public Settings(string name, int value, string unit, bool selecte, bool changed)
         {
             Name = name;
             Value = value;
             Unit = unit;
             Selected = selected;
+            Changed = changed;
         }
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name)
@@ -49,7 +63,6 @@ namespace PeristalticApp.Classes
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
             }
-
         }
     }
 }

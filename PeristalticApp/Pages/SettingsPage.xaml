@@ -18,43 +18,90 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="Settings" Foreground="White" FontSize="35" Padding="10,3,0,3"/>
-                <Border x:Name="ExportBorder" Grid.Column="1" Margin="5" BorderBrush="White" Background="Transparent" BorderThickness="1,0,0,0" MouseDown="Export_MouseDown">
-                    <fa:FontAwesome Grid.Column="1" Icon="Save" Foreground="White" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center" MouseDown="Export_MouseDown"/>
-                </Border>
-                <Grid.Triggers>
-                    <EventTrigger RoutedEvent="MouseDown">
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ColorAnimation Storyboard.TargetName="ExportBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"  To="#102d47" Duration="0:0:0.2"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                        <EventTrigger RoutedEvent="MouseUp">
+                <TextBlock Text="Settings" Foreground="White" FontSize="35" Padding="15,0,0,4" VerticalAlignment="Center"/>
+                <Border x:Name="BackBorder" Grid.Column="1" Margin="0"  BorderBrush="White" Background="#143959" BorderThickness="1,0,0.8,0" MouseDown="BackBorder_MouseDown">
+                    <fa:FontAwesome Grid.Column="1" x:Name="BackIcon" Icon="ArrowCircleLeft" Foreground="White" FontSize="50" HorizontalAlignment="Center" VerticalAlignment="Center" MouseDown="BackBorder_MouseDown"/>
+                    <Border.Triggers>
+                        <EventTrigger RoutedEvent="MouseDown">
                             <BeginStoryboard>
                                 <Storyboard>
-                                <ColorAnimation Storyboard.TargetName="ExportBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"  To="Transparent" Duration="0:0:0.2"/>
+                                    <ColorAnimation Storyboard.TargetName="BackIcon" Storyboard.TargetProperty="(fa:FontAwesome.Foreground).(SolidColorBrush.Color)"   To="#143959"  Duration="0:0:0.1" AutoReverse="False"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
-                </Grid.Triggers>
-                
+                        <EventTrigger RoutedEvent="MouseUp">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation   Storyboard.TargetName="BackIcon" Storyboard.TargetProperty="(fa:FontAwesome.Foreground).(SolidColorBrush.Color)"   To="White"  Duration="0:0:0.1" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetName="BackBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"   To="#185c78"  Duration="0:0:0.1" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetName="BackBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"   To="#143959"  Duration="0:0:0.1" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Border.Triggers>
+                </Border>
+                <Border x:Name="ExportBorder" Grid.Column="2" Margin="0" CornerRadius="0,15,15,0" BorderBrush="White" Background="#143959" BorderThickness="1,0,0,0" MouseDown="Export_MouseDown">
+                    <fa:FontAwesome Grid.Column="1" x:Name="ExportIcon" Icon="Send" Foreground="White" FontSize="40" HorizontalAlignment="Center" VerticalAlignment="Center" MouseDown="Export_MouseDown"/>
+                    <Border.Triggers>
+                        <EventTrigger RoutedEvent="MouseDown">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetName="ExportIcon" Storyboard.TargetProperty="(fa:FontAwesome.Foreground).(SolidColorBrush.Color)"   To="#143959"  Duration="0:0:0.1" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseUp">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation   Storyboard.TargetName="ExportIcon" Storyboard.TargetProperty="(fa:FontAwesome.Foreground).(SolidColorBrush.Color)"   To="White"  Duration="0:0:0.1" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetName="ExportBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"   To="#185c78"  Duration="0:0:0.1" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetName="ExportBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"   To="#143959"  Duration="0:0:0.1" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Border.Triggers>
+                </Border>
             </Grid>
         </Border>
         <Border Grid.Row="1" Background="#143959" Margin="0,5,0,0" CornerRadius="15">
-            <ScrollViewer x:Name="SettingsScrollViewer" Grid.Row="1" IsEnabled="True" Margin="0,0,10,0">
+            <ScrollViewer x:Name="SettingsScrollViewer" Grid.Row="1" IsEnabled="True" Margin="0,0,10,0" Padding="5">
                 <ItemsControl x:Name="SettingsEWlementOverview" ItemsSource="{Binding}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border x:Name="SettingsElement" HorizontalAlignment="Stretch" Margin="10,10,0,0" VerticalAlignment="Stretch" CornerRadius="10"  Background="#1f7396"  IsEnabled="True" Height="50" BorderThickness="2" BorderBrush="#1f7396" MouseDown="SettingsElement_MouseDown" Tag="{Binding Path=Name}">
+                            <Border x:Name="SettingsElement" HorizontalAlignment="Stretch" Margin="5,5,0,5" VerticalAlignment="Stretch" CornerRadius="10"  Background="#1f7396"  IsEnabled="True" Height="50" BorderThickness="2" BorderBrush="#1f7396" MouseDown="SettingsElement_MouseDown" Tag="{Binding Path=Name}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="4*"/>
                                         <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="0.5*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="NameOfSettingsElement" Grid.Column="0" Text="{Binding Path=Name, Mode=TwoWay}" IsEnabled="True" Margin="3,3,0,3" Width="auto" Foreground="White" Background="#1f7396" Height="auto" Padding="10,0,0,0" FontSize="25">
+                                    <TextBlock x:Name="NameOfSettingsElement" Grid.Column="0" Text="{Binding Path=Name, Mode=TwoWay}" FontWeight="Bold" IsEnabled="True" Margin="3,3,0,3" Width="auto" Foreground="White" Background="#1f7396" Height="auto" Padding="10,0,0,0" FontSize="25">
                                         <TextBlock.Resources>
                                             <Style TargetType="{x:Type Border}">
                                                 <Setter Property="CornerRadius" Value="7"/>
@@ -66,8 +113,8 @@
                                             <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition Width="1*"/>
                                         </Grid.ColumnDefinitions>
-                                        <WrapPanel>
-                                            <TextBox Grid.Column="0" Text="{Binding Path=Value, Mode=TwoWay}" IsEnabled="{Binding Path=Selected, UpdateSourceTrigger=PropertyChanged}" Margin="5,2,0,2" Width="100" FontSize="20" BorderBrush="White" BorderThickness="1" Foreground="White" Background="#143959" Height="40" VerticalContentAlignment="Center" HorizontalAlignment="Center" Padding="5,0,0,0">
+                                        <WrapPanel Grid.Column="1">
+                                            <TextBox Grid.Column="0" Text="{Binding Path=Value, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Tag="{Binding Path=Name}" IsEnabled="{Binding Path=Selected, UpdateSourceTrigger=PropertyChanged}" Margin="5,2,0,2" Width="100" FontSize="20" BorderBrush="White" BorderThickness="1" Foreground="White" Background="#143959" Height="40" VerticalContentAlignment="Center" HorizontalAlignment="Center" Padding="5,0,0,0" TextChanged="TextBox_TextChanged" >
                                                 <TextBox.Resources>
                                                     <Style TargetType="{x:Type Border}">
                                                         <Setter Property="CornerRadius" Value="10,0,0,10"/>
@@ -79,8 +126,8 @@
                                             </Border>
                                         </WrapPanel>
                                     </Grid>
-                                    <fa:FontAwesome Grid.Column="2" Icon="Times" HorizontalAlignment="Right" Margin="15,5,5,5" FontSize="15" Foreground="White"/>
-                                    <fa:FontAwesome Grid.Column="2" Icon="Connectdevelop" HorizontalAlignment="Right" Margin="5,5,5,5" FontSize="15" Foreground="White"/>
+                                    <fa:FontAwesome Grid.Column="2" x:Name="ChangeIconOk" Icon="CheckCircle" HorizontalAlignment="Right" Margin="0,5,18,5" FontSize="30" Foreground="#143959" VerticalAlignment="Center"/>
+                                    <fa:FontAwesome Grid.Column="2" x:Name="ChangeIconNot" Icon="TimesCircle" HorizontalAlignment="Right" Margin="0,5,18,5" FontSize="30" Foreground="#143959" VerticalAlignment="Center"/>
                                 </Grid>
                                 <Border.Triggers>
                                     <EventTrigger RoutedEvent="MouseEnter">
@@ -122,7 +169,27 @@
                                         </BeginStoryboard>
                                     </DataTrigger.ExitActions>
                                 </DataTrigger>
-                                
+                                <DataTrigger Binding="{Binding Changed}" Value="false">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation  Storyboard.TargetName="ChangeIconOk" Storyboard.TargetProperty="(fa:FontAwesome.Opacity)" To="1" Duration="0:0:0.5" AutoReverse="False"  />
+                                                <DoubleAnimation  Storyboard.TargetName="ChangeIconNot" Storyboard.TargetProperty="(fa:FontAwesome.Opacity)" To="0" Duration="0:0:0.5" AutoReverse="False"  />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Changed}" Value="true">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation  Storyboard.TargetName="ChangeIconOk" Storyboard.TargetProperty="(fa:FontAwesome.Opacity)"  To="0" Duration="0:0:0.5" AutoReverse="False"  />
+                                                <DoubleAnimation  Storyboard.TargetName="ChangeIconNot" Storyboard.TargetProperty="(fa:FontAwesome.Opacity)" To="1" Duration="0:0:0.5" AutoReverse="False"  />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                </DataTrigger>
+
                             </DataTemplate.Triggers>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -137,5 +204,157 @@
 
         </Border>
     </Grid>
+    
+    <!-- CUSTOM SCROLLBAR KILL ME PLS.. -->
+    <Page.Resources>
+        <SolidColorBrush x:Key="StandardBorderBrush" Color="#888" />
+        <SolidColorBrush x:Key="StandardBackgroundBrush" Color="Black" />
+        <SolidColorBrush x:Key="HoverBorderBrush" Color="#DDD" />
+        <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#27d3a8" />
+        <SolidColorBrush x:Key="SelectedForegroundBrush" Color="White" />
+        <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+        <SolidColorBrush x:Key="GlyphBrush" Color="#444" />
+        <SolidColorBrush x:Key="NormalBrush" Color="#888" />
+        <SolidColorBrush x:Key="NormalBorderBrush" Color="#888" />
+        <SolidColorBrush x:Key="HorizontalNormalBrush" Color="#FF686868" />
+        <SolidColorBrush x:Key="HorizontalNormalBorderBrush" Color="#888" />
+
+        <LinearGradientBrush x:Key="ListBoxBackgroundBrush" StartPoint="0,0" EndPoint="1,0.001">
+            <GradientBrush.GradientStops>
+                <GradientStopCollection>
+                    <GradientStop Color="White" Offset="0.0" />
+                    <GradientStop Color="White" Offset="0.6" />
+                    <GradientStop Color="#DDDDDD" Offset="1.2"/>
+                </GradientStopCollection>
+            </GradientBrush.GradientStops>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="StandardBrush" StartPoint="0,0" EndPoint="0,1">
+            <GradientBrush.GradientStops>
+                <GradientStopCollection>
+                    <GradientStop Color="#FFF" Offset="0.0"/>
+                    <GradientStop Color="#CCC" Offset="1.0"/>
+                </GradientStopCollection>
+            </GradientBrush.GradientStops>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="PressedBrush" StartPoint="0,0" EndPoint="0,1">
+            <GradientBrush.GradientStops>
+                <GradientStopCollection>
+                    <GradientStop Color="#BBB" Offset="0.0"/>
+                    <GradientStop Color="#EEE" Offset="0.1"/>
+                    <GradientStop Color="#EEE" Offset="0.9"/>
+                    <GradientStop Color="#FFF" Offset="1.0"/>
+                </GradientStopCollection>
+            </GradientBrush.GradientStops>
+        </LinearGradientBrush>
+
+        <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Border Name="Border" Margin="1" CornerRadius="2" Background="{StaticResource NormalBrush}" BorderBrush="{StaticResource NormalBorderBrush}" BorderThickness="1">
+                            <Path HorizontalAlignment="Center" VerticalAlignment="Center" Fill="{StaticResource GlyphBrush}" Data="{Binding Path=Content, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource PressedBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ScrollBarPageButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Border Background="Black" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border CornerRadius="4" Background="#1ea684" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0"  Width="10" Margin="5,10,-2,10"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition MaxHeight="0"/>
+                    <RowDefinition Height="0.00001*"/>
+                    <RowDefinition MaxHeight="0"/>
+                </Grid.RowDefinitions>
+                <Border Grid.RowSpan="3" CornerRadius="2" Background="Transparent" />
+                <RepeatButton Grid.Row="0" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineUpCommand" Content="M 0 4 L 8 4 L 4 0 Z" />
+                <Track Name="PART_Track" Grid.Row="1" IsDirectionReversed="true">
+                    <Track.DecreaseRepeatButton>
+                        <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand" />
+                    </Track.DecreaseRepeatButton>
+                    <Track.Thumb>
+                        <Thumb Style="{StaticResource ScrollBarThumb}" Margin="1,0,1,0" Background="{StaticResource HorizontalNormalBrush}" BorderBrush="{StaticResource HorizontalNormalBorderBrush}" />
+                    </Track.Thumb>
+                    <Track.IncreaseRepeatButton>
+                        <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageDownCommand" />
+                    </Track.IncreaseRepeatButton>
+                </Track>
+                <RepeatButton Grid.Row="3" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineDownCommand" Content="M 0 0 L 4 4 L 8 0 Z"/>
+            </Grid>
+        </ControlTemplate>
+        <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Vertical">
+                    <Setter Property="Width" Value="18"/>
+                    <Setter Property="Height" Value="Auto" />
+                    <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FavsScrollViewer" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ScrollContentPresenter Grid.Column="1"/>
+                            <ScrollBar Name="PART_VerticalScrollBar" Value="{TemplateBinding VerticalOffset}" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
 
 </Page>

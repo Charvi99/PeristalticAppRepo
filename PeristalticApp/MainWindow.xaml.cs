@@ -20,40 +20,40 @@ using MQTTnet.Client;
 using MQTTnet.Implementations;
 using MQTTnet.ManagedClient;
 using MQTTnet.Protocol;
+using System.ComponentModel;
 
 namespace PeristalticApp
 {
-    public static class Global
-    {
-        public static IMqttClient mqttClient;
-        public static MQTTnet.Client.IMqttClientOptions options = null;
-    }
 
     public partial class MainWindow : Window
     {
         private bool navigationVisible = false;
         private MQTTPage newMQTT = new MQTTPage();
+        public static bool connectFromMainWindow { get; set; }
+
+        System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+
+
+
         //Frame MainWindowFrame = new Frame();
         public MainWindow()
         {
+            connectFromMainWindow = true;
+            WindowStyle = WindowStyle.SingleBorderWindow;
             InitializeComponent();
-            //subMainGrid.Children.Add(MainWindowFrame);
-            //MainWindowFrame.SetValue(Grid.RowProperty, 1);
 
-            //Dispatcher.BeginInvoke(new Frame());
-            //Task.Run(async () => { await newMQTT.ConnectMqttServerAsync(); await newMQTT.MQTT_Subscribe(); await MQTTPage.MQTT_Publish("peristaltic/data", "penis"); });
-            //MQTTPage.ConnectMqttServerAsync();
-            //MQTTPage.ConnectMqttServerAsync();
-            //newMQTT.ConnectMqttServerAsync();
+            Classes.Global.Instance.MQTTConnectedIndicatorTxt = "ahoj";
+            Classes.Global.Instance.PumpRunningIndicator = new SolidColorBrush(Colors.Red); 
+            Classes.Global.Instance.PumpRunningIndicatorTxt = "Pump STOP ";
+            
 
-            //MQTTPage.MQTT_Subscribe();
-            //MQTTPage.MQTT_Publish("peristaltic/data", "OH HELLO THERE");
-            navigateToPage("SettingsPage");
+            navigateToPage("MQTTPage");
 
-
-
+            dispatcherTimer.Tick += dispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimer.Start();
         }
-        private void navigateToPage(string goTo)
+        static public void navigateToPage(string goTo)
         {
             foreach (Window window in System.Windows.Application.Current.Windows)
             {
@@ -63,7 +63,7 @@ namespace PeristalticApp
                 }
             }
         }
-
+        // HANDLER PRO VÝSUVNÉ MENU NAVIGACE
         private void NavigationIcon_MouseDown(object sender, EventArgs e)
         {
             navigationAnimation(!navigationVisible);
@@ -76,7 +76,7 @@ namespace PeristalticApp
                 Vector offset = VisualTreeHelper.GetOffset(NavigationPanel);
                 var left = offset.X;
                 TranslateTransform trans = new TranslateTransform();
-                
+
                 NavigationPanel.RenderTransform = trans;
                 DoubleAnimation showAnim = new DoubleAnimation(0, -left, TimeSpan.FromSeconds(0.5));
                 DoubleAnimation shadowAnim = new DoubleAnimation(1, 0.8, TimeSpan.FromSeconds(0.5), FillBehavior.Stop);
@@ -101,35 +101,76 @@ namespace PeristalticApp
 
             }
         }
-
-        private void NavigationIcon_MouseEnter(object sender, MouseEventArgs e)
-        {
-
-        }
-
-        private void NavigationIcon_MouseLeave(object sender, MouseEventArgs e)
-        {
-
-        }
-
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            
-        }
-
+        // NAVIGACE DO MONITORPAGE
         private void MonitorBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
             navigateToPage("MonitorPage");
         }
 
+        // NAVIGACE DO SETTINGS
         private void SettingsBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
             navigateToPage("SettingsPage");
         }
 
+        // NAVIGACE DO MQTT
         private void MQTTBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
             navigateToPage("MQTTPage");
+        }
+
+
+        private void Start_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            MQTTPage.MQTT_Publish("peristaltic/run", "START");
+            Classes.Global.Instance.Running = true;
+        }
+
+        private void Stop_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            MQTTPage.MQTT_Publish("peristaltic/run", "STOP");
+            Classes.Global.Instance.Running = false;
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try { DragMove(); }
+            catch { }
+        }
+        private void Minimalize_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+        private void Maximaze_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (WindowState != WindowState.Maximized)
+                WindowState = WindowState.Maximized;
+
+            else
+                WindowState = WindowState.Normal;
+
+        }
+        private void Exit_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            /* MessageBoxResult result = MessageBoxResult.No;
+             if (UI_App_WPF.Pages.PokusPage.Saved == false || UI_App_WPF.Pages.ProgramPage.Saved == false || UI_App_WPF.Pages.UploadPage.Saved == false)
+             {
+                 result = System.Windows.MessageBox.Show("Ukončit bez uložení?", "", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                 if (result == MessageBoxResult.Yes)
+                     System.Windows.Application.Current.Shutdown();
+             }
+             else*/
+            System.Windows.Application.Current.Shutdown();
+
+        }
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            // code goes here
+        }
+
+        private void Git_ahref(object sender, MouseButtonEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/Charvi99/PeristalticAppRepo");
         }
     }
 }
