@@ -19,7 +19,7 @@ using System.ComponentModel;
 using LiveCharts;
 using LiveCharts.Configurations;
 using System.Threading;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
 
 namespace PeristalticApp
 {
@@ -36,6 +36,11 @@ namespace PeristalticApp
         private double _axisMin;
         private double _trend;
 
+        public int longMessageInterval { get; set; }
+        public string warningMessage { get; set; }
+        public int flowCounter { get; set; }
+
+
 
 
         public MonitorPage()
@@ -47,6 +52,11 @@ namespace PeristalticApp
             dispatcherTimer.Tick += dispatcherTimer_Tick;
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             dispatcherTimer.Start();
+
+            longMessageInterval = 0;
+            warningMessage = "";
+
+            flowCounter = 0;
 
             DataFromPump = new List<Classes.JSONData>();
 
@@ -84,6 +94,19 @@ namespace PeristalticApp
 
             DataContext = this;
         }
+
+        public bool _youSpinMyHeadRightNowRightNowLikeArecordBabyRightNowRightNow { get; set; }
+
+        public bool youSpinMyHeadRightNowRightNowLikeArecordBabyRightNowRightNow
+        {
+            get { return _youSpinMyHeadRightNowRightNowLikeArecordBabyRightNowRightNow; }
+            set
+            {
+                _youSpinMyHeadRightNowRightNowLikeArecordBabyRightNowRightNow = value;
+                OnPropertyChanged("youSpinMyHeadRightNowRightNowLikeArecordBabyRightNowRightNow");
+            }
+        }
+
         public ChartValues<Classes.GraphData> ChartValues { get; set; }
         public Func<double, string> DateTimeFormatter { get; set; }
         public double AxisStep { get; set; }
@@ -156,59 +179,91 @@ namespace PeristalticApp
 
         private void RotationBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (RotationIcon.FlipOrientation == FlipOrientation.Normal)
-                RotationIcon.FlipOrientation = FlipOrientation.Horizontal;
-            else if (RotationIcon.FlipOrientation == FlipOrientation.Horizontal)
-                RotationIcon.FlipOrientation = FlipOrientation.Normal;
-            else
-                RotationIcon.FlipOrientation = FlipOrientation.Normal;
+            if (Classes.Global.Instance.Running == false)
+            {
+                if (RotationIcon.FlipOrientation == FlipOrientation.Normal)
+                    RotationIcon.FlipOrientation = FlipOrientation.Horizontal;
+                else if (RotationIcon.FlipOrientation == FlipOrientation.Horizontal)
+                    RotationIcon.FlipOrientation = FlipOrientation.Normal;
+                else
+                    RotationIcon.FlipOrientation = FlipOrientation.Normal;
 
-            if (SettingsFromPump[2].Value == 0) SettingsFromPump[2].Value = 1;
-            else SettingsFromPump[2].Value = 0;
-            string export = JsonConvert.SerializeObject(SettingsFromPump, Formatting.Indented);
-            Task.Run(async () => { await MQTTPage.MQTT_Publish("peristaltic/settings", export); });
+                if (SettingsFromPump[2].Value == 0) SettingsFromPump[2].Value = 1;
+                else SettingsFromPump[2].Value = 0;
+                string export = JsonConvert.SerializeObject(SettingsFromPump, Formatting.Indented);
+                Task.Run(async () => { await MQTTPage.MQTT_Publish("peristaltic/settings", export); });
+            }
+            else
+            {
+                warningMessage = "Direction of pump \ncant be changed \nwhile pump is running";
+            }
+
         }
         public void RotationIconEnable()
         {
-            RotationIcon.Spin = Classes.Global.Instance.Running;
+            //RotationIcon.Spin = Classes.Global.Instance.Running;
+            youSpinMyHeadRightNowRightNowLikeArecordBabyRightNowRightNow = Classes.Global.Instance.Running;
         }
         public void fromSettingsToInfopanelText()
         {
             if (SettingsFromPump != null)
             { 
-                switch (SettingsFromPump[0].Value)
+                if(warningMessage == "")
                 {
-                    default:    //MANUAL
-                        txtMode.Text = "MANUAL";
-                        infoPanel.Text =
-                                SettingsFromPump[3].Name + ":\t" + SettingsFromPump[3].Value + " [" + SettingsFromPump[3].Unit + "]\n" +
-                                SettingsFromPump[5].Name + ":\t" + SettingsFromPump[5].Value + " [" + SettingsFromPump[5].Unit + "]";
-                        // SettingsFromPump[9].Value + ":\r" + SettingsFromPump[9].Value + "\r" + SettingsFromPump[9].Unit + "\n";
-                        break;
-                    case 1:     //SEMIMANUAL
-                        txtMode.Text = "SEMIMANUAL";
-                        infoPanel.Text =
-                                SettingsFromPump[3].Name + ":\t" + SettingsFromPump[3].Value + " [" + SettingsFromPump[3].Unit + "]\n" +
-                                SettingsFromPump[5].Name + ":\t" + SettingsFromPump[5].Value + " [" + SettingsFromPump[5].Unit + "]";
-                        //SettingsFromPump[9].Value + ":\r" + SettingsFromPump[9].Value + "\r" + SettingsFromPump[9].Unit + "\n";
-                        break;
-                    case 2:     //AUTOMAT
-                        txtMode.Text = "AUTOMAT";
-                        infoPanel.Text =
-                                SettingsFromPump[3].Name + ":\t" + SettingsFromPump[3].Value + " [" + SettingsFromPump[3].Unit + "]\n" +
-                                SettingsFromPump[1].Name + ":\t" + SettingsFromPump[1].Value + " [" + SettingsFromPump[1].Unit + "]\n" +
-                                SettingsFromPump[5].Name + ":\t" + SettingsFromPump[5].Value + " [" + SettingsFromPump[5].Unit + "]";
-                        // SettingsFromPump[9].Value + ":\r" + SettingsFromPump[9].Value + "\r" + SettingsFromPump[9].Unit + "\n";
-                        break;
-                    case 3:     //INTERVAL
-                        txtMode.Text = "INTERVAL";
-                        infoPanel.Text =
-                                SettingsFromPump[3].Name + ":\t" + SettingsFromPump[3].Value + " [" + SettingsFromPump[3].Unit + "]\n" +
-                                SettingsFromPump[1].Name + ":\t" + SettingsFromPump[1].Value + " [" + SettingsFromPump[1].Unit + "]\n" +
-                                SettingsFromPump[4].Name + ":\t" + SettingsFromPump[4].Value + " [" + SettingsFromPump[4].Unit + "]\n" +
-                                SettingsFromPump[5].Name + ":\t" + SettingsFromPump[5].Value + " [" + SettingsFromPump[5].Unit + "]";
-                        // SettingsFromPump[9].Value + ":\r" + SettingsFromPump[9].Value + "\r" + SettingsFromPump[9].Unit + "\n";
-                        break;
+                    txtFlowValue.Text = flowCounter.ToString();
+                    switch (SettingsFromPump[0].Value)
+                    {
+                        default:    //MANUAL
+                            txtMode.Text = "MANUAL";
+                            infoPanel.Text =
+                                    SettingsFromPump[3].Name + ":\t" + SettingsFromPump[3].Value + " [" + SettingsFromPump[3].Unit + "]\n" +
+                                    SettingsFromPump[5].Name + ":\t" + SettingsFromPump[5].Value + " [" + SettingsFromPump[5].Unit + "]";
+                            // SettingsFromPump[9].Value + ":\r" + SettingsFromPump[9].Value + "\r" + SettingsFromPump[9].Unit + "\n";
+                            break;
+                        case 1:     //SEMIMANUAL
+                            txtMode.Text = "SEMIMANUAL";
+                            infoPanel.Text =
+                                    SettingsFromPump[3].Name + ":\t" + SettingsFromPump[3].Value + " [" + SettingsFromPump[3].Unit + "]\n" +
+                                    SettingsFromPump[5].Name + ":\t" + SettingsFromPump[5].Value + " [" + SettingsFromPump[5].Unit + "]";
+                            //SettingsFromPump[9].Value + ":\r" + SettingsFromPump[9].Value + "\r" + SettingsFromPump[9].Unit + "\n";
+                            break;
+                        case 2:     //AUTOMAT
+                            txtMode.Text = "AUTOMAT";
+                            infoPanel.Text =
+                                    SettingsFromPump[3].Name + ":\t" + SettingsFromPump[3].Value + " [" + SettingsFromPump[3].Unit + "]\n" +
+                                    SettingsFromPump[1].Name + ":\t" + SettingsFromPump[1].Value + " [" + SettingsFromPump[1].Unit + "]\n" +
+                                    SettingsFromPump[5].Name + ":\t" + SettingsFromPump[5].Value + " [" + SettingsFromPump[5].Unit + "]";
+                            // SettingsFromPump[9].Value + ":\r" + SettingsFromPump[9].Value + "\r" + SettingsFromPump[9].Unit + "\n";
+                            break;
+                        case 3:     //INTERVAL
+                            txtMode.Text = "INTERVAL";
+                            infoPanel.Text =
+                                    SettingsFromPump[3].Name + ":\t" + SettingsFromPump[3].Value + " [" + SettingsFromPump[3].Unit + "]\n" +
+                                    SettingsFromPump[1].Name + ":\t" + SettingsFromPump[1].Value + " [" + SettingsFromPump[1].Unit + "]\n" +
+                                    SettingsFromPump[4].Name + ":\t" + SettingsFromPump[4].Value + " [" + SettingsFromPump[4].Unit + "]\n" +
+                                    SettingsFromPump[5].Name + ":\t" + SettingsFromPump[5].Value + " [" + SettingsFromPump[5].Unit + "]";
+                            // SettingsFromPump[9].Value + ":\r" + SettingsFromPump[9].Value + "\r" + SettingsFromPump[9].Unit + "\n";
+                            break;
+
+                    }
+                }
+                else if(longMessageInterval < 6)
+                {
+                    longMessageInterval++;
+                    infoPanel.Text = warningMessage;
+                    var bc = new BrushConverter();
+                    infoPanel.Background = (Brush)bc.ConvertFrom("#F8E7AE");
+                    infoPanel.Foreground = (Brush)bc.ConvertFrom("#1f7396");
+                    infoPanelBorder.Background = (Brush)bc.ConvertFrom("#F8E7AE");
+                }
+                else
+                {
+                    longMessageInterval = 0;
+                    warningMessage = "";
+                    var bc = new BrushConverter();
+                    infoPanel.Background = (Brush)bc.ConvertFrom("#1f7396");
+                    infoPanel.Foreground = (Brush)bc.ConvertFrom("#ffffff");
+                    infoPanelBorder.Background = (Brush)bc.ConvertFrom("#1f7396");
 
                 }
             }
@@ -243,10 +298,17 @@ namespace PeristalticApp
         {
             if(SettingsFromPump != null)
             {
-                SettingsFromPump[0].Value++;
-                if (SettingsFromPump[0].Value > 3) SettingsFromPump[0].Value = 0;
-                string export = JsonConvert.SerializeObject(SettingsFromPump, Formatting.Indented);
-                Task.Run(async () => { await MQTTPage.MQTT_Publish("peristaltic/settings", export); });
+                if (Classes.Global.Instance.Running == false)
+                {
+                        SettingsFromPump[0].Value++;
+                    if (SettingsFromPump[0].Value > 3) SettingsFromPump[0].Value = 0;
+                    string export = JsonConvert.SerializeObject(SettingsFromPump, Formatting.Indented);
+                    Task.Run(async () => { await MQTTPage.MQTT_Publish("peristaltic/settings", export); });
+                }
+                else
+                {
+                    warningMessage = "Mode of pump \ncant be changed \nwhile pump is running";
+                }
             }
         }
 
@@ -254,12 +316,31 @@ namespace PeristalticApp
         {
             if (SettingsFromPump != null)
             {
-                SettingsFromPump[0].Value--;
-                if (SettingsFromPump[0].Value < 0) SettingsFromPump[0].Value = 3;
-                string export = JsonConvert.SerializeObject(SettingsFromPump, Formatting.Indented);
-                Task.Run(async () => { await MQTTPage.MQTT_Publish("peristaltic/settings", export); });
+                if(Classes.Global.Instance.Running == false)
+                {
+                    SettingsFromPump[0].Value--;
+                    if (SettingsFromPump[0].Value < 0) SettingsFromPump[0].Value = 3;
+                    string export = JsonConvert.SerializeObject(SettingsFromPump, Formatting.Indented);
+                    Task.Run(async () => { await MQTTPage.MQTT_Publish("peristaltic/settings", export); });
+                }
+                else
+                {
+                    warningMessage = "Mode of pump \ncant be changed \nwhile pump is running";
+                }
             }
 
+        }
+
+        private void FlowBorder_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Classes.Global.Instance.Running == false)
+            {
+                flowCounter = 0;
+            }
+            else
+            {
+                warningMessage = "Flow counter \ncant be nullify \nwhile pump is running";
+            }
         }
     }
 }

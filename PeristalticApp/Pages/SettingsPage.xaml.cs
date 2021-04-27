@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using System.Windows.Controls.Primitives;
 
 
 namespace PeristalticApp
@@ -52,7 +54,10 @@ namespace PeristalticApp
             Task.Run(async () => { await MQTTPage.MQTT_Publish("peristaltic/settings", export); });
             
             for (int i = 0; i < settings.Count; i++)
-                settings[i].Changed = true;
+                settings[i].Changed = false;
+            SettingsEWlementOverview.ItemsSource = null;
+            SettingsEWlementOverview.ItemsSource = settings;
+
         }
 
         private void SettingsElement_MouseDown(object sender, MouseButtonEventArgs e)
@@ -66,24 +71,80 @@ namespace PeristalticApp
 
         }
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        /*
+         * private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string theSender = ((TextBox)sender).Tag.ToString();
 
             for (int i = 0; i < settings.Count; i++)
             {
-                if(settings[i].Name == theSender)
+                if (settings[i].Name == theSender)
                 {
                     settings[i].Changed = true;
                     break;
                 }
             }
-
-        }
+        }*/
 
         private void BackBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
             MainWindow.navigateToPage("MonitorPage");
+
+        }
+
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            string theSender = ((TextBox)sender).Tag.ToString();
+
+            if (theSender == "Mode")
+            {
+                Regex regex = new Regex("([^ASMIasmi]{1}$)");
+                e.Handled = regex.IsMatch(e.Text);
+            }
+            /*
+             else
+            {
+                if (theSenderValue.Length < 1)
+                {
+                    Regex regex = new Regex("([^0-1]{1,2})+$");
+                    e.Handled = regex.IsMatch(e.Text);
+                }
+                else
+                {
+                    Regex regex = new Regex("([^0-1]{0})+$");
+                    e.Handled = regex.IsMatch(e.Text);
+                }
+
+            }*/
+
+        }
+
+        private void DecreseBorderRepeat_Click(object sender, RoutedEventArgs e)
+        {
+            string theSender = ((RepeatButton)sender).Tag.ToString();
+            for (int i = 0; i < settings.Count; i++)
+            {
+                if (settings[i].Name == theSender)
+                {
+                    settings[i].decreseValue();
+                    settings[i].Selected = true;
+                }
+                else settings[i].Selected = false;
+            }
+        }
+
+        private void IncreseBorderRepeat_Click(object sender, RoutedEventArgs e)
+        {
+            string theSender = ((RepeatButton)sender).Tag.ToString();
+            for (int i = 0; i < settings.Count; i++)
+            {
+                if (settings[i].Name == theSender)
+                {
+                    settings[i].increseValue();
+                    settings[i].Selected = true;
+                }
+                else settings[i].Selected = false;
+            }
 
         }
     }

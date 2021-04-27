@@ -104,30 +104,116 @@
                                     <TextBlock x:Name="NameOfSettingsElement" Grid.Column="0" Text="{Binding Path=Name, Mode=TwoWay}" FontWeight="Bold" IsEnabled="True" Margin="3,3,0,3" Width="auto" Foreground="White" Background="#1f7396" Height="auto" Padding="10,0,0,0" FontSize="25">
                                         <TextBlock.Resources>
                                             <Style TargetType="{x:Type Border}">
-                                                <Setter Property="CornerRadius" Value="7"/>
+                                                <Setter Property="CornerRadius" Value="8"/>
                                             </Style>
                                         </TextBlock.Resources>
                                     </TextBlock>
                                     <Grid Grid.Column="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
                                         </Grid.ColumnDefinitions>
                                         <WrapPanel Grid.Column="1">
-                                            <TextBox Grid.Column="0" Text="{Binding Path=Value, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Tag="{Binding Path=Name}" IsEnabled="{Binding Path=Selected, UpdateSourceTrigger=PropertyChanged}" Margin="5,2,0,2" Width="100" FontSize="20" BorderBrush="White" BorderThickness="1" Foreground="White" Background="#143959" Height="40" VerticalContentAlignment="Center" HorizontalAlignment="Center" Padding="5,0,0,0" TextChanged="TextBox_TextChanged" >
-                                                <TextBox.Resources>
+                                            <!--<Border x:Name="DecreseBorder" Grid.Column="1"  Margin="0,2,5,2" Width="30"  Background="#143959" Height="30" HorizontalAlignment="Center" CornerRadius="10" BorderThickness="1" BorderBrush="White" MouseDown="DecreseBorder_MouseDown" Tag="{Binding Path=Name}">
+                                                <fa:FontAwesome Grid.Column="2" x:Name="DecreseIcon" Icon="AngleLeft" HorizontalAlignment="Center" FontSize="30" Foreground="White" VerticalAlignment="Center"/>
+                                            </Border>-->
+                                            <RepeatButton x:Name="DecreseBorderRepeat" Grid.Column="1"  Margin="0,2,5,2" Width="30"  Background="#143959" Height="30" HorizontalAlignment="Center" BorderBrush="#143959" Click="DecreseBorderRepeat_Click" Tag="{Binding Path=Name}">
+                                                <fa:FontAwesome Grid.Column="2" x:Name="DecreseIcond" Icon="AngleLeft" HorizontalAlignment="Center" FontSize="30" Foreground="White" VerticalAlignment="Center"/>
+                                                <RepeatButton.Resources>
                                                     <Style TargetType="{x:Type Border}">
-                                                        <Setter Property="CornerRadius" Value="10,0,0,10"/>
+                                                        <Setter Property="CornerRadius" Value="8"/>
                                                     </Style>
-                                                </TextBox.Resources>
-                                            </TextBox>
+                                                </RepeatButton.Resources>
+                                                <RepeatButton.Template>
+                                                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                        <Border Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                                                            <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" />
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="Button.IsMouseOver" Value="True">
+                                                                <Setter TargetName="Border" Property="Background" Value="#185c78" />
+                                                                <Setter TargetName="Border" Property="BorderBrush" Value="White" />
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </RepeatButton.Template>
+                                                <RepeatButton.Triggers>
+                                                    <EventTrigger RoutedEvent="MouseDown">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation   Storyboard.TargetName="DecreseIcond"  Storyboard.TargetProperty="(fa:FontAwesome.Foreground).(SolidColorBrush.Color)"   To="#143959" Duration="0:0:0.2" AutoReverse="False"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                    <EventTrigger RoutedEvent="MouseDown">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation   Storyboard.TargetName="DecreseIcond"  Storyboard.TargetProperty="(fa:FontAwesome.Foreground).(SolidColorBrush.Color)"   To="White" Duration="0:0:0.2" AutoReverse="False"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </RepeatButton.Triggers>
+                                            </RepeatButton>
+                                            <Border Grid.Column="0" Margin="5,2,0,2" Width="145" Background="#143959" Height="40" HorizontalAlignment="Center" Padding="5,0,0,0" BorderBrush="White" BorderThickness="1" CornerRadius="10,0,0,10" Opacity="1">
+                                                <TextBlock Text="{Binding Path=StringValue,UpdateSourceTrigger=PropertyChanged}"  Width="auto" FontSize="20" Foreground="White" Background="#143959" Height="auto" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="5,0,0,0">
+                                                    <TextBlock.Resources>
+                                                        <Style TargetType="{x:Type Border}">
+                                                            <Setter Property="CornerRadius" Value="8"/>
+                                                            <Setter Property="BorderBrush" Value="White"/>
+                                                            <Setter Property="BorderThickness" Value="1"/>
+                                                        </Style>
+                                                    </TextBlock.Resources>
+                                                </TextBlock>
+                                            </Border>
                                             <Border Grid.Column="1"  Margin="0,2,5,2" Width="40"  Background="#143959" Height="40" HorizontalAlignment="Center" CornerRadius="0,10,10,0" BorderThickness="1" BorderBrush="White" >
                                                 <TextBlock Text="{Binding Path=Unit, Mode=TwoWay}" IsEnabled="True" FontSize="20" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                             </Border>
+                                            <!--<Border  x:Name="IncreseBorder" Grid.Column="1"  Margin="5,0,30,0" Width="30"  Background="#143959" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="10" BorderThickness="1" BorderBrush="White" MouseDown="IncreseBorder_MouseDown" Tag="{Binding Path=Name}">
+                                                <fa:FontAwesome Grid.Column="2" x:Name="IncreseIcon" Icon="AngleRight" HorizontalAlignment="Center"  FontSize="30" Foreground="White" VerticalAlignment="Center"/>
+                                            </Border>-->
+                                            <RepeatButton x:Name="IncreseBorderRepeat" Grid.Column="1"  Margin="5,2,50,2" Width="30"  Background="#143959" Height="30" HorizontalAlignment="Center" BorderBrush="#143959" Click="IncreseBorderRepeat_Click" Tag="{Binding Path=Name}">
+                                                <fa:FontAwesome Grid.Column="2" x:Name="IncreseIcond" Icon="AngleRight" HorizontalAlignment="Center" FontSize="30" Foreground="White" VerticalAlignment="Center"/>
+                                                <RepeatButton.Resources>
+                                                    <Style TargetType="{x:Type Border}">
+                                                        <Setter Property="CornerRadius" Value="8"/>
+                                                    </Style>
+                                                </RepeatButton.Resources>
+                                                <RepeatButton.Template>
+                                                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                                        <Border Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                                                            <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="{TemplateBinding Padding}" />
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="Button.IsMouseOver" Value="True">
+                                                                <Setter TargetName="Border" Property="Background" Value="#185c78" />
+                                                                <Setter TargetName="Border" Property="BorderBrush" Value="White" />
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </RepeatButton.Template>
+                                                <RepeatButton.Triggers>
+                                                    <EventTrigger RoutedEvent="MouseDown">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation   Storyboard.TargetName="IncreseIcond"  Storyboard.TargetProperty="(fa:FontAwesome.Foreground).(SolidColorBrush.Color)"   To="#143959" Duration="0:0:0.2" AutoReverse="False"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                    <EventTrigger RoutedEvent="MouseDown">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation   Storyboard.TargetName="IncreseIcond"  Storyboard.TargetProperty="(fa:FontAwesome.Foreground).(SolidColorBrush.Color)"   To="White" Duration="0:0:0.2" AutoReverse="False"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </RepeatButton.Triggers>
+                                            </RepeatButton>
+
+
                                         </WrapPanel>
                                     </Grid>
-                                    <fa:FontAwesome Grid.Column="2" x:Name="ChangeIconOk" Icon="CheckCircle" HorizontalAlignment="Right" Margin="0,5,18,5" FontSize="30" Foreground="#143959" VerticalAlignment="Center"/>
-                                    <fa:FontAwesome Grid.Column="2" x:Name="ChangeIconNot" Icon="TimesCircle" HorizontalAlignment="Right" Margin="0,5,18,5" FontSize="30" Foreground="#143959" VerticalAlignment="Center"/>
+                                    <fa:FontAwesome Grid.Column="2" x:Name="ChangeIconOk" Icon="CheckCircle" HorizontalAlignment="Right" Margin="0,5,12,5" FontSize="30" Foreground="White" VerticalAlignment="Center" />
+                                    <fa:FontAwesome Grid.Column="2" x:Name="ChangeIconNot" Icon="TimesCircle" HorizontalAlignment="Right" Margin="0,5,12,5" FontSize="30" Foreground="White" VerticalAlignment="Center" Opacity="0" ToolTip="Stav synchronizace s pumpu"/>
                                 </Grid>
                                 <Border.Triggers>
                                     <EventTrigger RoutedEvent="MouseEnter">
@@ -147,7 +233,7 @@
                                 </Border.Triggers>
                             </Border>
                             <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding Path=Selected, UpdateSourceTrigger=PropertyChanged}" Value="true">
+                                <!--     <DataTrigger Binding="{Binding Path=Selected, UpdateSourceTrigger=PropertyChanged}" Value="true">
                                     <DataTrigger.EnterActions>
                                         <BeginStoryboard>
                                             <Storyboard>
@@ -168,8 +254,8 @@
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </DataTrigger.ExitActions>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Changed}" Value="false">
+                                </DataTrigger-->
+                                <DataTrigger Binding="{Binding Changed, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                     <DataTrigger.EnterActions>
                                         <BeginStoryboard>
                                             <Storyboard>
@@ -179,7 +265,7 @@
                                         </BeginStoryboard>
                                     </DataTrigger.EnterActions>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding Changed}" Value="true">
+                                <DataTrigger Binding="{Binding Changed, UpdateSourceTrigger=PropertyChanged}" Value="true">
                                     <DataTrigger.EnterActions>
                                         <BeginStoryboard>
                                             <Storyboard>
@@ -190,7 +276,7 @@
                                     </DataTrigger.EnterActions>
                                 </DataTrigger>
 
-                            </DataTemplate.Triggers>
+                            </DataTemplate.Triggers> 
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
